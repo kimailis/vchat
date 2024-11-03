@@ -1,0 +1,130 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+#appBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #3f51b5;
+    color: #fff;
+}
+
+#appTitle {
+    margin: 0;
+}
+
+#addMessageButton {
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#contentWrapper {
+    display: flex;
+    margin-top: 20px;
+}
+
+#queueList {
+    width: 20%;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+}
+
+#queueMenu {
+    list-style: none;
+    padding: 0;
+}
+
+.queueItem {
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.queueItem:hover {
+    background-color: #f0f0f0;
+}
+
+.goButton {
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    cursor: pointer;
+}
+
+#mainDisplay {
+    width: 80%;
+    padding: 20px;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.modalStatus {
+    margin-top: 10px;
+    font-weight: bold;
+    color: green;
+}
+
+/* Success and Error Styles */
+.statusMessage {
+    font-size: 1.1em;
+    margin: 20px 0;
+}
+
+.statusMessage.success {
+    color: green;
+}
+
+.statusMessage.error {
+    color: red;
+}
+
+.okButton {
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.okButton.success {
+    background-color: green;
+    color: white;
+}
+
+.okButton.error {
+    background-color: red;
+    color: white;
+}
