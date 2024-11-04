@@ -2,47 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vchat</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <!-- App Bar -->
-    <div id="appBar">
-        <h1 id="appTitle">Vchat</h1>
-        <button id="addMessageButton">Add Message</button>
-    </div>
-
-    <!-- Main Content Wrapper -->
-    <div id="contentWrapper">
-        <!-- Queue List Section -->
-        <div id="queueList">
-            <p id="noQueuesText">No queues</p>
-            <ul id="queueMenu"></ul>
+    <div class="container">
+        <div id="appBar">
+            <h1 id="appTitle">Vchat</h1>
+            <button id="addMessageButton" class="primary-button">Add Message</button>
         </div>
-
-        <!-- Main Display Section -->
-        <div id="mainDisplay">
-            <h2 id="mainHeading">Welcome to Vchat</h2>
-            <p id="messagesContainer">This is a simple messaging app. Please select a message queue to display or add a new message at the top.</p>
-        </div>
-    </div>
-
-    <!-- Modal for Adding Message -->
-    <div id="addMessageModal" class="modal">
-        <div class="modalContent">
-            <h2>Add New Message</h2>
-            <label for="modalQueueName">Queue Name:</label>
-            <input type="text" id="modalQueueName" placeholder="Enter queue name" required>
-            <label for="modalMessageContent">Message:</label>
-            <textarea id="modalMessageContent" placeholder="Enter message" required></textarea>
-            <div class="modalButtons">
-                <button id="cancelButton">Cancel</button>
-                <button id="addButton">Add</button>
+        
+        <div class="queue-section">
+            <div class="queue-list">
+                <ul id="queueMenu"></ul>
+                <p id="noQueuesText" style="display: none;">No queues available.</p>
             </div>
-            <div id="submitStatus" class="modalStatus"></div>
+            
+            <div class="messages-section">
+                <div id="messagesContainer"></div>
+            </div>
         </div>
     </div>
 
-    <script src="/static/index.js"></script>
+    <div id="addMessageModal" class="modal">
+        <div class="modalContent"></div>
+    </div>
+    
+    <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

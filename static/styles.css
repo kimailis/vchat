@@ -1,6 +1,19 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 #appBar {
@@ -10,31 +23,37 @@ body {
     padding: 10px;
     background-color: #3f51b5;
     color: #fff;
+    height: 3rem;
 }
 
 #appTitle {
     margin: 0;
 }
 
-#addMessageButton {
+.primary-button {
     background-color: #ff4081;
     color: white;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+    border-radius: 10px;
 }
 
-#contentWrapper {
+.primary-button:hover {
+    background-color: #f50057;
+}
+
+.queue-section {
     display: flex;
     margin-top: 20px;
+    flex: 1;
 }
 
-#queueList {
+.queue-list {
     width: 20%;
     padding: 10px;
     border-right: 1px solid #ddd;
     overflow-y: auto;
-    max-height: calc(100vh - 60px);
 }
 
 #queueMenu {
@@ -46,6 +65,8 @@ body {
     padding: 5px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
 .queueItem:hover {
@@ -56,16 +77,33 @@ body {
     background-color: #3f51b5;
     color: white;
     border: none;
-    padding: 3px 8px;
+    padding: 4px 10px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
-#mainDisplay {
+.goButton:hover {
+    background-color: #303f9f;
+}
+
+.messages-section {
     width: 80%;
     padding: 20px;
 }
 
-/* Modal styles */
+.message-card {
+    padding: 20px;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0px 0px 8px 1px rgba(0,0,0,0.3);
+    min-height: 40%;
+    margin-bottom: 20px;
+}
+
+#messagesContainer {
+    height: 80%;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -84,21 +122,52 @@ body {
     border-radius: 8px;
     width: 300px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalContent input,
+.modalContent textarea {
+    width: 90%;
+    min-height: 1rem;
+    border: 1px solid rgb(87, 86, 86);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+#modalMessageContent {
+    height: 5rem;
+    resize: vertical;
 }
 
 .modalButtons {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    width: 90%;
+}
+
+.modalButtons button {
+    padding: 5px;
+    border: 1px solid rgb(111, 255, 200);
+    border-radius: 10px;
+    min-height: 2.5rem;
+    min-width: 3.5rem;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.modalButtons button:hover {
+    background-color: rgb(111, 255, 200);
 }
 
 .modalStatus {
     margin-top: 10px;
     font-weight: bold;
-    color: green;
 }
 
-/* Success and Error Styles */
 .statusMessage {
     font-size: 1.1em;
     margin: 20px 0;
@@ -117,6 +186,9 @@ body {
     border: none;
     cursor: pointer;
     margin-top: 10px;
+    border-radius: 10px;
+    min-height: 2.5rem;
+    min-width: 3.5rem;
 }
 
 .okButton.success {
