@@ -25,6 +25,17 @@ export const api = {
         return response;
     },
 
+    async deleteMessage(messageId) {
+        const response = await fetch(`/api/messages/${messageId}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            const errorData = await this.handleJsonResponse(response);
+            throw new Error(errorData.error || 'Error deleting message.');
+        }
+        return response;
+    },
+
     async handleJsonResponse(response) {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {

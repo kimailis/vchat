@@ -1,117 +1,132 @@
-// State management
-let currentQueue = null;
-let queues = [];
+import { api } from './api.js';
+import { ui } from './ui.js';
 
-// DOM Elements
-const queueNameInput = document.getElementById('queueName');
-const messageInput = document.getElementById('message');
-const queueList = document.getElementById('queueList');
-const messageList = document.getElementById('messageList');
-const createQueueForm = document.getElementById('createQueueForm');
-const messageForm = document.getElementById('messageForm');
-const currentQueueDisplay = document.getElementById('currentQueue');
-
-// Fetch all queues from the server
-async function fetchQueues() {
-    try {
-        const response = await fetch('/api/queues');
-        if (!response.ok) throw new Error('Failed to fetch queues');
-        queues = await response.json();
-        renderQueues();
-    } catch (error) {
-        console.error('Error fetching queues:', error);
+class MessageQueueApp {
+    constructor() {
+        this.initialize();
+        this.currentQueue = null;
     }
-}
 
-// Fetch messages for a specific queue
-async function fetchMessages(queueName) {
-    try {
-        const response = await fetch(`/api/${queueName}`);
-        if (!response.ok) throw new Error('Failed to fetch messages');
-        const messages = await response.json();
-        renderMessages(messages);
-    } catch (error) {
-        console.error('Error fetching messages:', error);
-    }
-}
-
-// Add a new message to a queue
-async function addMessage(queueName, content) {
-    try {
-        const response = await fetch(`/api/${queueName}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content }),
+    initialize() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.loadQueues();
+            this.setupEventListeners();
+            ui.displayMessages(null); // Show welcome message on initial load
         });
-        
-        if (!response.ok) throw new Error('Failed to add message');
-        
-        // Refresh messages after adding new one
-        await fetchMessages(queueName);
-        messageInput.value = '';
-    } catch (error) {
-        console.error('Error adding message:', error);
+    }
+
+    setupEventListeners() {
+        document.getElementById('addMessageButton').addEventListener('click', () => this.openModal());
+        document.getElementById('messagesContainer').addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-button')) {
+                const messageId = e.target.getAttribute('data-message-id');
+                this.deleteMessage(messageId);
+            }
+        });
+    }
+
+    async loadQueues() {
+        const queueList = ui.elements.queueList();
+        queueList.innerHTML = '';
+
+        try {
+            const queues = await api.fetchQueues();
+            if (Array.isArray(queues)) {
+                ui.elements.noQueuesText().style.display = queues.length === 0 ? 'block' : 'none';
+                queues.forEach(queue => {
+                    const queueItem = ui.createQueueItem(queue, (queueName) => this.fetchQueueMessages(queueName));
+                    queueList.appendChild(queueItem);
+                });
+
+                // Clear messages container if current queue no longer exists
+                if (this.currentQueue && !queues.includes(this.currentQueue)) {
+                    this.currentQueue = null;
+                    ui.displayMessages(null); // Show welcome message when queue is removed
+                }
+            }
+        } catch (error) {
+            console.error('Error loading queues:', error);
+            ui.elements.noQueuesText().innerText = 'Error loading queues.';
+        }
+    }
+
+    async fetchQueueMessages(queueName) {
+        try {
+            this.currentQueue = queueName;
+            const messages = await api.fetchQueueMessages(queueName);
+            ui.displayMessages(messages);
+        } catch (error) {
+            console.error('Error fetching queue messages:', error);
+            ui.displayMessages([]);
+        }
+    }
+
+    async deleteMessage(messageId) {
+        try {
+            await api.deleteMessage(messageId);
+            
+            // Check if this was the last message in the current queue
+            if (this.currentQueue) {
+                const messages = await api.fetchQueueMessages(this.currentQueue);
+                if (!messages || messages.length === 0) {
+                    // If no messages left, clear the current queue
+                    this.currentQueue = null;
+                    ui.displayMessages(null); // Show welcome message when last message is deleted
+                } else {
+                    // If messages remain, update the display
+                    ui.displayMessages(messages);
+                }
+            }
+
+            // Reload queues to update the menu
+            await this.loadQueues();
+
+            ui.showModal();
+            ui.displayModalMessage('Message deleted successfully', 'success', () => {
+                ui.hideModal();
+            });
+        } catch (error) {
+            ui.showModal();
+            ui.displayModalMessage(error.message, 'error', () => ui.hideModal());
+        }
+    }
+
+    openModal() {
+        ui.showModal();
+        ui.resetModalContent(
+            () => this.closeModal(),
+            () => this.addMessage()
+        );
+    }
+
+    closeModal() {
+        ui.hideModal();
+    }
+
+    async addMessage() {
+        const queueName = document.getElementById('modalQueueName').value;
+        const messageContent = document.getElementById('modalMessageContent').value;
+
+        if (!queueName || !messageContent) {
+            ui.displayModalMessage('Queue name and message cannot be empty.', 'error', () => this.closeModal());
+            return;
+        }
+
+        try {
+            await api.addMessage(queueName, messageContent);
+            ui.displayModalMessage('Message posted', 'success', () => {
+                this.closeModal();
+                this.loadQueues();
+                if (queueName === this.currentQueue) {
+                    this.fetchQueueMessages(queueName);
+                }
+            });
+        } catch (error) {
+            ui.displayModalMessage(error.message, 'error', () => this.closeModal());
+            console.error('Error adding message:', error);
+        }
     }
 }
-
-// Render the queue list
-function renderQueues() {
-    queueList.innerHTML = '';
-    queues.forEach(queue => {
-        const li = document.createElement('li');
-        li.className = `queue-item ${currentQueue === queue ? 'active' : ''}`;
-        li.textContent = queue;
-        li.onclick = () => selectQueue(queue);
-        queueList.appendChild(li);
-    });
-}
-
-// Render messages for the current queue
-function renderMessages(messages) {
-    messageList.innerHTML = '';
-    messages.forEach(message => {
-        const li = document.createElement('li');
-        li.className = 'message-item';
-        li.textContent = message;
-        messageList.appendChild(li);
-    });
-}
-
-// Select a queue and load its messages
-function selectQueue(queueName) {
-    currentQueue = queueName;
-    currentQueueDisplay.textContent = `Current Queue: ${queueName}`;
-    fetchMessages(queueName);
-    renderQueues(); // Update active state in queue list
-    messageForm.style.display = 'block';
-}
-
-// Event Listeners
-createQueueForm.onsubmit = async (e) => {
-    e.preventDefault();
-    const queueName = queueNameInput.value.trim();
-    if (!queueName) return;
-
-    // Add message to create new queue
-    await addMessage(queueName, 'Queue created');
-    queueNameInput.value = '';
-    await fetchQueues();
-};
-
-messageForm.onsubmit = async (e) => {
-    e.preventDefault();
-    if (!currentQueue) return;
-    
-    const content = messageInput.value.trim();
-    if (!content) return;
-    
-    await addMessage(currentQueue, content);
-};
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    fetchQueues();
-    messageForm.style.display = 'none';
-});
+new MessageQueueApp();

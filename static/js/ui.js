@@ -26,6 +26,11 @@ export const ui = {
         const container = this.elements.messagesContainer();
         container.innerHTML = '';
         
+        if (!Array.isArray(messages)) {
+            this.showWelcomeMessage();
+            return;
+        }
+
         if (messages.length === 0) {
             container.innerHTML = '<p>No messages found in this queue.</p>';
             return;
@@ -34,9 +39,30 @@ export const ui = {
         messages.forEach(message => {
             const messageCard = document.createElement('div');
             messageCard.className = 'message-card';
-            messageCard.textContent = message;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = message.message;
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-button';
+            deleteButton.textContent = '×';
+            deleteButton.setAttribute('data-message-id', message.id);
+            
+            messageCard.appendChild(messageContent);
+            messageCard.appendChild(deleteButton);
             container.appendChild(messageCard);
         });
+    },
+
+    showWelcomeMessage() {
+        const container = this.elements.messagesContainer();
+        container.innerHTML = `
+            <div class="welcome-message">
+                <h2>Welcome to Vchat</h2>
+                <p>Select a queue to display messages, or click 'Add Message' to post a new message</p>
+            </div>
+        `;
     },
 
     resetModalContent(onCancel, onAdd) {

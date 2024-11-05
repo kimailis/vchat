@@ -23,7 +23,7 @@ body {
     padding: 10px;
     background-color: #3f51b5;
     color: #fff;
-    height: 3rem;
+    height: 4rem;
 }
 
 #appTitle {
@@ -88,20 +88,71 @@ body {
 
 .messages-section {
     width: 80%;
-    padding: 20px;
+    
+}
+
+#messagesContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .message-card {
     padding: 20px;
     border: none;
     border-radius: 20px;
-    box-shadow: 0px 0px 8px 1px rgba(0,0,0,0.3);
-    min-height: 40%;
-    margin-bottom: 20px;
+    box-shadow: 0px 11px 43px -12px rgba(0,0,0,0.75);
+    min-height: 80%;
+    min-width: 80%;
+    display: flex;
+    justify-content: space-between;
+    
 }
 
-#messagesContainer {
-    height: 80%;
+.message-content {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.welcome-message {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0px 11px 43px -12px rgba(0,0,0,0.75);
+}
+
+.welcome-message h2 {
+    color: #3f51b5;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.welcome-message p {
+    color: #666;
+    font-size: 1.2em;
+    line-height: 1.5;
+}
+
+.delete-button {
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.3s ease;
+    align-self: flex-end;
+}
+
+.delete-button:hover {
+    background-color: #f50057;
 }
 
 .modal {

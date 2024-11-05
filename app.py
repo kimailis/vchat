@@ -52,11 +52,11 @@ def get_queue_messages(queue_name):
     try:
         conn = get_db_connection()
         messages = conn.execute(
-            'SELECT message FROM messages WHERE queue = ? ORDER BY created_at DESC',
+            'SELECT id, message FROM messages WHERE queue = ? ORDER BY created_at DESC',
             (queue_name,)
         ).fetchall()
         conn.close()
-        return jsonify([message['message'] for message in messages])
+        return jsonify([{'id': message['id'], 'message': message['message']} for message in messages])
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -85,6 +85,22 @@ def add_message(queue_name):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/messages/<int:message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    """Delete a specific message by ID"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.execute('DELETE FROM messages WHERE id = ?', (message_id,))
+        conn.commit()
+        conn.close()
+        
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'Message not found'}), 404
+            
+        return jsonify({'message': 'Message deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors"""
@@ -97,4 +113,4 @@ def server_error(error):
 
 if __name__ == '__main__':
     init_db()  # Initialize the database before starting the server
-    app.run(debug=True, port='80', host='0.0.0.0')
+    app.run(debug=True)
